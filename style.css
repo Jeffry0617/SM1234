@@ -1,0 +1,153 @@
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at center, #0d0221 0%, #110e1b 100%);
+      overflow: hidden;
+      perspective: 1000px;
+      font-family: sans-serif;
+    }
+
+    .star-field {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .meteor {
+      position: absolute;
+      width: 2px;
+      height: 120px;
+      background: linear-gradient(to bottom, #8a2be2, rgba(0, 255, 255, 0));
+      transform: rotate(45deg);
+      opacity: 0.8;
+      animation: meteor-fall linear infinite;
+    }
+
+    @keyframes meteor-fall {
+      0% {
+        opacity: 1;
+        transform: translate(-10vw, -100vh) rotate(45deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(100vw, 100vh) rotate(45deg);
+      }
+    }
+
+    .carousel {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform-style: preserve-3d;
+      transform: translate(-50%, -50%);
+      width: 280px;
+      height: 180px;
+      animation: spin 50s linear infinite;
+      z-index: 2;
+    }
+
+    .carousel img {
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      border-radius: 12px;
+      border: 3px solid #fff;
+      object-fit: contain;
+      background-color: #000;
+      box-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
+      cursor: pointer;
+    }
+
+    @keyframes spin {
+      from { transform: translate(-50%, -50%) rotateY(0deg); }
+      to   { transform: translate(-50%, -50%) rotateY(-360deg); }
+    }
+
+    .caption {
+      position: fixed;
+      bottom: 20px;
+      width: 100%;
+      text-align: center;
+      color: #ffffff;
+      font-size: 50px;
+      font-weight: bold;
+      z-index: 3;
+      text-shadow: 0 0 8px rgba(138, 43, 226, 0.8);
+    }
+
+    /* 放大灯箱样式 */
+    #lightbox {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.8);
+      justify-content: center;
+      align-items: center;
+    }
+
+    #lightbox img {
+      max-width: 90vw;
+      max-height: 90vh;
+      border-radius: 10px;
+      box-shadow: 0 0 20px #fff;
+    }
+
+    #lightbox:active {
+      display: none;
+    }
+	
+	.stars-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 200vw;
+      height: 200vh;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .star {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: gold;
+      border-radius: 50%;
+      opacity: 1.0;
+      animation: twinkle 10s infinite ease-in-out;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 1; }
+    }
+	
+	#musicBtn {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+	  z-index: 999;
+      font-size: 16px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      border: 1px solid #fff;
+      backdrop-filter: blur(4px);
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    #musicBtn:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+	
+  </style>

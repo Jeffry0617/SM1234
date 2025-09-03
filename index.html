@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>蓝紫流星雨旋转相册</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at center, #0d0221 0%, #110e1b 100%);
+      overflow: hidden;
+      perspective: 1000px;
+      font-family: sans-serif;
+    }
+
+    .star-field {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .meteor {
+      position: absolute;
+      width: 2px;
+      height: 120px;
+      background: linear-gradient(to bottom, #8a2be2, rgba(0, 255, 255, 0));
+      transform: rotate(45deg);
+      opacity: 0.8;
+      animation: meteor-fall linear infinite;
+    }
+
+    @keyframes meteor-fall {
+      0% {
+        opacity: 1;
+        transform: translate(-10vw, -100vh) rotate(45deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(100vw, 100vh) rotate(45deg);
+      }
+    }
+
+    .carousel {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform-style: preserve-3d;
+      transform: translate(-50%, -50%);
+      width: 280px;
+      height: 180px;
+      animation: spin 50s linear infinite;
+      z-index: 2;
+    }
+
+    .carousel img {
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      border-radius: 12px;
+      border: 3px solid #fff;
+      object-fit: contain;
+      background-color: #000;
+      box-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
+      cursor: pointer;
+    }
+
+    @keyframes spin {
+      from { transform: translate(-50%, -50%) rotateY(0deg); }
+      to   { transform: translate(-50%, -50%) rotateY(-360deg); }
+    }
+
+    .caption {
+      position: fixed;
+      bottom: 20px;
+      width: 100%;
+      text-align: center;
+      color: #ffffff;
+      font-size: 50px;
+      font-weight: bold;
+      z-index: 3;
+      text-shadow: 0 0 8px rgba(138, 43, 226, 0.8);
+    }
+
+    /* 放大灯箱样式 */
+    #lightbox {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.8);
+      justify-content: center;
+      align-items: center;
+    }
+
+    #lightbox img {
+      max-width: 90vw;
+      max-height: 90vh;
+      border-radius: 10px;
+      box-shadow: 0 0 20px #fff;
+    }
+
+    #lightbox:active {
+      display: none;
+    }
+	
+	.stars-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 200vw;
+      height: 200vh;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .star {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: gold;
+      border-radius: 50%;
+      opacity: 1.0;
+      animation: twinkle 10s infinite ease-in-out;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 1; }
+    }
+	
+	#musicBtn {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+	  z-index: 999;
+      font-size: 16px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      border: 1px solid #fff;
+      backdrop-filter: blur(4px);
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    #musicBtn:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+	
+  </style>
+</head>
+<body>
+
+  <div class="stars-background" id="starsBackground"></div>
+
+  <!-- 🌠 蓝紫流星雨 -->
+  <div class="star-field" id="starField"></div>
+
+  <!-- 📸 相册 -->
+  <div class="carousel" id="carousel">
+    <img src="./image/1.jpg"alt="">
+    <img src="./image/2.jpg"alt="">
+    <img src="./image/3.jpg"alt="">
+    <img src="./image/4.jpg"alt="">
+    <img src="./image/5.jpg"alt="">
+	<img src="./image/6.jpg"alt="">
+	<img src="./image/7.jpg"alt="">
+	<img src="./image/9.jpg"alt="">
+	<img src="./image/10.jpg"alt="">
+	<img src="./image/11.jpg"alt="">
+	<img src="./image/12.jpg"alt="">
+	<img src="./image/13.jpg"alt="">
+	<img src="./image/14.jpg"alt="">
+  </div>
+
+  <!-- 🔠 打字底部文字 -->
+  <div class="caption" id="caption"></div>
+
+  <!-- 💡 图片放大弹窗 -->
+  <div id="lightbox" onclick="this.style.display='none'">
+    <img id="lightbox-img" src="">
+  </div>
+
+  <!-- 🎵 音乐播放器 -->
+  <audio id="bgMusic" autoplay loop playsinline>
+    <source src="./music/LoveStory.mp3" type="audio/mpeg">
+     您的浏览器不支持音频播放。
+  </audio>
+
+  <!-- 🎵 播放按钮 -->
+  <button id="musicBtn">🎵 播放音乐</button>
+
+  <script>
+  
+    // 🌟 生成背景星星
+    const starsBackground = document.getElementById('starsBackground');
+    const totalStars = 250;
+    for (let i = 0; i < totalStars; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.left = Math.random() * 100 + 'vw';
+      star.style.top = Math.random() * 100 + 'vh';
+      star.style.animationDuration = (Math.random() * 3 + 2).toFixed(2) + 's';
+      star.style.opacity = Math.random();
+      starsBackground.appendChild(star);
+    }
+
+    // 🌠 生成流星
+    const meteorCount = 3000;
+    const starField = document.getElementById('starField');
+    for (let i = 0; i < meteorCount; i++) {
+      const meteor = document.createElement('div');
+      meteor.className = 'meteor';
+      meteor.style.left = Math.random() * 100 + 'vw';
+      meteor.style.animationDuration = (Math.random() * 1 + 0.6).toFixed(2) + 's';
+      meteor.style.animationDelay = (Math.random() * 6).toFixed(2) + 's';
+      starField.appendChild(meteor);
+    }
+
+    // 📸 相册排布
+    const carousel = document.getElementById('carousel');
+    const images = carousel.children;
+    const angle = 360 / images.length;
+    for (let i = 0; i < images.length; i++) {
+      images[i].style.transform = `rotateY(${i * angle}deg) translateZ(500px)`;
+    }
+
+    // 🔠 打字效果
+    const text = "Happy Birthday我的同桌，Shirley MOk Xue Ling ✨";
+    const caption = document.getElementById('caption');
+    let index = 0;
+    function typeWriter() {
+      if (index < text.length) {
+        caption.innerHTML += text.charAt(index);
+        index++;
+        setTimeout(typeWriter, 100);
+      }
+    }
+    typeWriter();
+
+    // 🖼️ 点击放大图片
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    Array.from(images).forEach(img => {
+      img.onclick = function () {
+        lightboxImg.src = this.src;
+        lightbox.style.display = 'flex';
+      };
+    });
+	
+	// 🎵 播放按钮控制音乐
+	const music = document.getElementById("bgMusic");
+	const btn = document.getElementById("musicBtn");
+	
+	btn.addEventListener("click", () => {
+	  if (music.paused) {
+	    music.play();
+		btn.textContent = "🎵 暂停音乐";
+	  } else {
+	    music.pause();
+		btn.textContent = "🎵 播放音乐";
+	  }
+	});
+	
+  </script>
+
+</body>
+</html>
